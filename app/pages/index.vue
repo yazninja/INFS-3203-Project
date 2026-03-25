@@ -1,4 +1,5 @@
 <template>
+  <AppNavbar />
   <div class="landing">
 
     <!-- ── HERO ─────────────────────────────────────────── -->
@@ -43,32 +44,35 @@
             <div class="car-visual-glow"></div>
             <svg class="car-svg" viewBox="0 0 520 240" fill="none" xmlns="http://www.w3.org/2000/svg">
               <!-- Body -->
-              <path d="M40 158 L40 132 Q52 96 90 80 L180 58 Q220 50 265 58 L370 72 Q415 80 445 112 L480 132 L480 158 Q480 178 465 178 L58 178 Q40 178 40 158Z"
-                fill="rgba(200,169,110,0.07)" stroke="rgba(200,169,110,0.35)" stroke-width="1.5"/>
+              <path
+                d="M40 158 L40 132 Q52 96 90 80 L180 58 Q220 50 265 58 L370 72 Q415 80 445 112 L480 132 L480 158 Q480 178 465 178 L58 178 Q40 178 40 158Z"
+                fill="rgba(200,169,110,0.07)" stroke="rgba(200,169,110,0.35)" stroke-width="1.5" />
               <!-- Roof -->
-              <path d="M118 118 Q135 82 175 68 L248 60 Q285 57 320 66 L380 82 L390 118Z"
-                fill="rgba(200,169,110,0.05)" stroke="rgba(200,169,110,0.2)" stroke-width="1"/>
+              <path d="M118 118 Q135 82 175 68 L248 60 Q285 57 320 66 L380 82 L390 118Z" fill="rgba(200,169,110,0.05)"
+                stroke="rgba(200,169,110,0.2)" stroke-width="1" />
               <!-- Windshield -->
-              <path d="M130 116 Q148 84 182 72 L248 64 L248 116Z"
-                fill="rgba(150,200,240,0.06)" stroke="rgba(150,200,240,0.18)" stroke-width="0.8"/>
+              <path d="M130 116 Q148 84 182 72 L248 64 L248 116Z" fill="rgba(150,200,240,0.06)"
+                stroke="rgba(150,200,240,0.18)" stroke-width="0.8" />
               <!-- Rear window -->
-              <path d="M268 64 L340 68 L378 80 L388 116 L268 116Z"
-                fill="rgba(150,200,240,0.06)" stroke="rgba(150,200,240,0.18)" stroke-width="0.8"/>
+              <path d="M268 64 L340 68 L378 80 L388 116 L268 116Z" fill="rgba(150,200,240,0.06)"
+                stroke="rgba(150,200,240,0.18)" stroke-width="0.8" />
               <!-- Wheels -->
-              <circle cx="148" cy="178" r="34" fill="#0e0e10" stroke="rgba(200,169,110,0.4)" stroke-width="1.5"/>
-              <circle cx="148" cy="178" r="20" fill="rgba(200,169,110,0.06)" stroke="rgba(200,169,110,0.5)" stroke-width="1"/>
-              <circle cx="148" cy="178" r="6"  fill="rgba(200,169,110,0.4)"/>
-              <circle cx="372" cy="178" r="34" fill="#0e0e10" stroke="rgba(200,169,110,0.4)" stroke-width="1.5"/>
-              <circle cx="372" cy="178" r="20" fill="rgba(200,169,110,0.06)" stroke="rgba(200,169,110,0.5)" stroke-width="1"/>
-              <circle cx="372" cy="178" r="6"  fill="rgba(200,169,110,0.4)"/>
+              <circle cx="148" cy="178" r="34" fill="#0e0e10" stroke="rgba(200,169,110,0.4)" stroke-width="1.5" />
+              <circle cx="148" cy="178" r="20" fill="rgba(200,169,110,0.06)" stroke="rgba(200,169,110,0.5)"
+                stroke-width="1" />
+              <circle cx="148" cy="178" r="6" fill="rgba(200,169,110,0.4)" />
+              <circle cx="372" cy="178" r="34" fill="#0e0e10" stroke="rgba(200,169,110,0.4)" stroke-width="1.5" />
+              <circle cx="372" cy="178" r="20" fill="rgba(200,169,110,0.06)" stroke="rgba(200,169,110,0.5)"
+                stroke-width="1" />
+              <circle cx="372" cy="178" r="6" fill="rgba(200,169,110,0.4)" />
               <!-- Headlight -->
-              <ellipse cx="460" cy="138" rx="14" ry="8"
-                fill="rgba(200,169,110,0.15)" stroke="rgba(200,169,110,0.5)" stroke-width="1"/>
+              <ellipse cx="460" cy="138" rx="14" ry="8" fill="rgba(200,169,110,0.15)" stroke="rgba(200,169,110,0.5)"
+                stroke-width="1" />
               <!-- Tail light -->
-              <ellipse cx="58" cy="140" rx="10" ry="7"
-                fill="rgba(224,90,58,0.2)" stroke="rgba(224,90,58,0.5)" stroke-width="1"/>
+              <ellipse cx="58" cy="140" rx="10" ry="7" fill="rgba(224,90,58,0.2)" stroke="rgba(224,90,58,0.5)"
+                stroke-width="1" />
               <!-- Ground shadow -->
-              <ellipse cx="260" cy="210" rx="200" ry="12" fill="rgba(200,169,110,0.04)"/>
+              <ellipse cx="260" cy="210" rx="200" ry="12" fill="rgba(200,169,110,0.04)" />
             </svg>
 
             <!-- Floating badges -->
@@ -174,9 +178,9 @@ useSeoMeta({
 
 const stats = [
   { num: '4,200+', label: 'Active Listings' },
-  { num: 'AI',     label: 'Powered Matching' },
-  { num: '< 30s',  label: 'To Find Your Match' },
-  { num: '100%',   label: 'Qatar-Based Listings' },
+  { num: 'AI', label: 'Powered Matching' },
+  { num: '< 30s', label: 'To Find Your Match' },
+  { num: '100%', label: 'Qatar-Based Listings' },
 ]
 
 const steps = [
@@ -232,7 +236,10 @@ const features = [
 </script>
 
 <style scoped>
-.landing { padding-top: var(--nav-h); overflow-x: hidden; }
+.landing {
+  padding-top: var(--nav-h);
+  overflow-x: hidden;
+}
 
 /* ── Hero ───────────────────────────────────── */
 .hero {
@@ -260,7 +267,7 @@ const features = [
   top: 10%;
   width: 60%;
   height: 70%;
-  background: radial-gradient(ellipse, rgba(200,169,110,0.07) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(200, 169, 110, 0.07) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -279,8 +286,8 @@ const features = [
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(200,169,110,0.08);
-  border: 1px solid rgba(200,169,110,0.2);
+  background: rgba(200, 169, 110, 0.08);
+  border: 1px solid rgba(200, 169, 110, 0.2);
   border-radius: 20px;
   padding: 7px 16px;
   font-size: 11px;
@@ -305,6 +312,7 @@ const features = [
   letter-spacing: 0.02em;
   margin-bottom: 28px;
 }
+
 .hero-title em {
   color: var(--accent);
   font-style: normal;
@@ -325,7 +333,10 @@ const features = [
   flex-wrap: wrap;
 }
 
-.btn-lg { padding: 14px 32px; font-size: 13px; }
+.btn-lg {
+  padding: 14px 32px;
+  font-size: 13px;
+}
 
 .btn-dot {
   display: inline-block;
@@ -345,14 +356,14 @@ const features = [
 .car-visual-glow {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at center, rgba(200,169,110,0.06) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(200, 169, 110, 0.06) 0%, transparent 70%);
   pointer-events: none;
 }
 
 .car-svg {
   width: 100%;
   max-width: 520px;
-  filter: drop-shadow(0 20px 60px rgba(200,169,110,0.1));
+  filter: drop-shadow(0 20px 60px rgba(200, 169, 110, 0.1));
 }
 
 .float-badge {
@@ -367,8 +378,15 @@ const features = [
 }
 
 @keyframes floatBob {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-6px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 .badge-top-right {
@@ -396,8 +414,17 @@ const features = [
   flex-direction: column;
   gap: 2px;
 }
-.badge-bottom-left span  { font-family: var(--font-display); font-size: 18px; color: var(--accent); }
-.badge-bottom-left small { font-size: 11px; color: var(--muted); }
+
+.badge-bottom-left span {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--accent);
+}
+
+.badge-bottom-left small {
+  font-size: 11px;
+  color: var(--muted);
+}
 
 /* ── Stats strip ─────────────────────────────── */
 .stats-strip {
@@ -415,7 +442,10 @@ const features = [
   padding: 28px 32px;
   border-right: 1px solid var(--border);
 }
-.stat:last-child { border-right: none; }
+
+.stat:last-child {
+  border-right: none;
+}
 
 .stat-num {
   font-family: var(--font-display);
@@ -433,7 +463,8 @@ const features = [
 }
 
 /* ── Section shared ──────────────────────────── */
-.how-section, .features-section {
+.how-section,
+.features-section {
   padding: 100px 0;
 }
 
@@ -455,6 +486,7 @@ const features = [
   letter-spacing: 0.03em;
   line-height: 1;
 }
+
 .section-title em {
   color: var(--accent);
   font-style: normal;
@@ -475,15 +507,28 @@ const features = [
   position: relative;
   transition: border-color 0.2s;
 }
-.step-card:not(:last-child) { border-right: none; }
-.step-card:hover { border-color: rgba(200,169,110,0.25); }
-.step-card:first-child { border-radius: var(--radius-md) 0 0 var(--radius-md); }
-.step-card:last-child  { border-radius: 0 var(--radius-md) var(--radius-md) 0; border-right: 1px solid var(--border); }
+
+.step-card:not(:last-child) {
+  border-right: none;
+}
+
+.step-card:hover {
+  border-color: rgba(200, 169, 110, 0.25);
+}
+
+.step-card:first-child {
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+
+.step-card:last-child {
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  border-right: 1px solid var(--border);
+}
 
 .step-number {
   font-family: var(--font-display);
   font-size: 56px;
-  color: rgba(200,169,110,0.1);
+  color: rgba(200, 169, 110, 0.1);
   line-height: 1;
   margin-bottom: 20px;
 }
@@ -521,7 +566,10 @@ const features = [
   padding: 36px 32px;
   transition: background 0.2s;
 }
-.feature-card:hover { background: var(--bg2); }
+
+.feature-card:hover {
+  background: var(--bg2);
+}
 
 .feature-icon-wrap {
   color: var(--accent);
@@ -542,25 +590,30 @@ const features = [
 }
 
 /* ── CTA ─────────────────────────────────────── */
-.cta-section { padding-bottom: 0; }
+.cta-section {
+  padding-bottom: 0;
+}
 
 .cta-box {
   position: relative;
-  border: 1px solid rgba(200,169,110,0.15);
+  border: 1px solid rgba(200, 169, 110, 0.15);
   border-radius: var(--radius-lg);
   padding: 80px 64px;
   overflow: hidden;
-  background: rgba(200,169,110,0.03);
+  background: rgba(200, 169, 110, 0.03);
 }
 
 .cta-glow {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(200,169,110,0.05) 0%, transparent 70%);
+  background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(200, 169, 110, 0.05) 0%, transparent 70%);
   pointer-events: none;
 }
 
-.cta-content { position: relative; z-index: 1; }
+.cta-content {
+  position: relative;
+  z-index: 1;
+}
 
 .cta-tag {
   display: inline-flex;
@@ -589,7 +642,11 @@ const features = [
   line-height: 0.95;
   margin-bottom: 20px;
 }
-.cta-title em { color: var(--accent); font-style: normal; }
+
+.cta-title em {
+  color: var(--accent);
+  font-style: normal;
+}
 
 .cta-desc {
   font-size: 16px;
@@ -612,14 +669,43 @@ const features = [
     grid-template-columns: 1fr;
     gap: 40px;
   }
-  .hero-right { display: none; }
-  .stats-inner { grid-template-columns: repeat(2, 1fr); }
-  .stat:nth-child(2) { border-right: none; }
-  .steps-grid { grid-template-columns: 1fr; }
-  .step-card { border-right: 1px solid var(--border) !important; border-radius: 0 !important; }
-  .step-card:first-child { border-radius: var(--radius-md) var(--radius-md) 0 0 !important; }
-  .step-card:last-child  { border-radius: 0 0 var(--radius-md) var(--radius-md) !important; border-top: none !important; }
-  .features-grid { grid-template-columns: 1fr; }
-  .cta-box { padding: 48px 32px; }
+
+  .hero-right {
+    display: none;
+  }
+
+  .stats-inner {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stat:nth-child(2) {
+    border-right: none;
+  }
+
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .step-card {
+    border-right: 1px solid var(--border) !important;
+    border-radius: 0 !important;
+  }
+
+  .step-card:first-child {
+    border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
+  }
+
+  .step-card:last-child {
+    border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
+    border-top: none !important;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-box {
+    padding: 48px 32px;
+  }
 }
 </style>
