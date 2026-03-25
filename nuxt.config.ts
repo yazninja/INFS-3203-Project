@@ -6,8 +6,7 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/ui',
     '@nuxtjs/seo',
-    '@nuxt/image',
-    '@nuxt/ui'
+    '@nuxt/image'
   ],
   css: ['~/assets/css/main.css']
 })
