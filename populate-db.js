@@ -1,38 +1,17 @@
 
-// schema:
-// {
-// 	adsCar: [
-// 		adID: number,
-// 		contactMobile_1: string,
-// 		contactMobile_2: string,
-// 		contactWhatsapp_1: string,
-// 		contactWhatsapp_2: string,
-// 		cylinder: {
-// 			cylinderName: string,
-// 		},
-// 		engineSize: string,
-// 		fuelType: {
-// 			fuelTypeName: string,
-// 		}...
-// 	],
-// 	meta: {
-// 		perPage: number,
-// 		curPage: number,
-// 		totalPages: number,
-// 		totalResults: number
-// 	}
-// }
-// IMPORTS
-const mongoose = require("mongoose");
 
-// CONNECT TO MONGODB
-mongoose.connect("mongodb://127.0.0.1:27017/qatarCars")
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error(err));
+import mongoose from "mongoose";
+const username = encodeURIComponent("mongo-project-admin");
+const password = encodeURIComponent("VQskSyEgrsoG7BER");
+
+await mongoose.connect(`mongodb://mongo-project-admin:${password}@ac-slezrux-shard-00-00.h2qjrjg.mongodb.net:27017,ac-slezrux-shard-00-01.h2qjrjg.mongodb.net:27017,ac-slezrux-shard-00-02.h2qjrjg.mongodb.net:27017/?ssl=true&replicaSet=atlas-ycbz1z-shard-0&authSource=admin&appName=project-qatarcars`, { serverApi: { version: '1', strict: true, deprecationErrors: true } })
+  .catch(err => { console.error(err); process.exit(1); });
+
+console.log("Database Connected");
 
 // SCHEMA
 const carSchema = new mongoose.Schema({
-  adID: { type: Number, unique: true },
+  adId: { type: Number, unique: false },
 
   contactMobile_1: String,
   contactMobile_2: String,
@@ -53,68 +32,31 @@ const carSchema = new mongoose.Schema({
 
 const Car = mongoose.model("Car", carSchema);
 
+let page = 1;
+let res = await fetch(`https://bo-prod.qatarliving.com/vehicles?cur_page=${page}&per_page=50`);
+let data = await res.json();
 
-// MAIN FUNCTION
-async function main() {
-  try {
-    let page = 1;
+await processData(data.adsCar);
 
-    let res = await fetch(`https://bo-prod.qatarliving.com/vehicles?cur_page=${page}&per_page=50`);
-    let data = await res.json();
+for (let i = 2; i <= data.meta.totalPages; i++) {
+  console.log(`Fetching page ${i}...`);
 
-    await processData(data.adsCar);
+  res = await fetch(`https://bo-prod.qatarliving.com/vehicles?cur_page=${i}&per_page=50`);
+  data = await res.json();
 
-    for (let i = 2; i <= data.meta.totalPages; i++) {
-      console.log(`Fetching page ${i}...`);
-
-      res = await fetch(`https://bo-prod.qatarliving.com/vehicles?cur_page=${i}&per_page=50`);
-      data = await res.json();
-
-      await processData(data.adsCar);
-    }
-
-    console.log("All data inserted ✅");
-    mongoose.connection.close();
-
-  } catch (error) {
-    console.error("Error:", error);
-    mongoose.connection.close();
-  }
+  await processData(data.adsCar);
 }
+
+console.log("All data inserted ✅");
+mongoose.connection.close();
+
 
 
 // PROCESS DATA FUNCTION
-async function processData(data) {
-  try {
-    const formattedData = data.map(item => ({
-      adID: item.adID,
+async function processData(cars) {
+  let filteredCars = cars.filter((car) => car.adId !== null);
+  console.log(cars[0]);
+  console.log("All:", cars.length, "Filtered:", filteredCars.length);
 
-      contactMobile_1: item.contactMobile_1,
-      contactMobile_2: item.contactMobile_2,
-      contactWhatsapp_1: item.contactWhatsapp_1,
-      contactWhatsapp_2: item.contactWhatsapp_2,
-
-      cylinder: {
-        cylinderName: item.cylinder?.cylinderName
-      },
-
-      engineSize: item.engineSize,
-
-      fuelType: {
-        fuelTypeName: item.fuelType?.fuelTypeName
-      }
-    }));
-
-    // insert into MongoDB (skip duplicates automatically)
-    await Car.insertMany(formattedData, { ordered: false });
-
-    console.log(`Inserted ${formattedData.length} cars`);
-
-  } catch (error) {
-    console.error("Insert error:", error.message);
-  }
+  await Car.insertMany(filteredCars, { rawResult: true }).catch((error) => console.error(error));
 }
-
-
-// RUN SCRIPT
-main();
