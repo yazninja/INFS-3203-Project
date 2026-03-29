@@ -23,11 +23,12 @@
 // 	}
 // }
 // IMPORTS
+require("dotenv").config();
 const mongoose = require("mongoose");
 
-// CONNECT TO MONGODB
-mongoose.connect("mongodb://127.0.0.1:27017/qatarCars")
-  .then(() => console.log("MongoDB connected"))
+// CONNECT TO MONGODB ATLAS
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Atlas connected ✅"))
   .catch(err => console.error(err));
 
 // SCHEMA
@@ -105,7 +106,6 @@ async function processData(data) {
       }
     }));
 
-    // insert into MongoDB (skip duplicates automatically)
     await Car.insertMany(formattedData, { ordered: false });
 
     console.log(`Inserted ${formattedData.length} cars`);
