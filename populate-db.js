@@ -1,27 +1,3 @@
-
-// schema:
-// {
-// 	adsCar: [
-// 		adID: number,
-// 		contactMobile_1: string,
-// 		contactMobile_2: string,
-// 		contactWhatsapp_1: string,
-// 		contactWhatsapp_2: string,
-// 		cylinder: {
-// 			cylinderName: string,
-// 		},
-// 		engineSize: string,
-// 		fuelType: {
-// 			fuelTypeName: string,
-// 		}...
-// 	],
-// 	meta: {
-// 		perPage: number,
-// 		curPage: number,
-// 		totalPages: number,
-// 		totalResults: number
-// 	}
-// }
 // IMPORTS
 require("dotenv").config();
 const mongoose = require("mongoose");
@@ -29,7 +5,10 @@ const mongoose = require("mongoose");
 // CONNECT TO MONGODB ATLAS
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Atlas connected ✅"))
-  .catch(err => console.error(err));
+  .catch(err => {
+    console.error(err);
+    process.exit(1);
+  });
 
 // SCHEMA
 const carSchema = new mongoose.Schema({
@@ -85,9 +64,12 @@ async function main() {
 
 
 // PROCESS DATA FUNCTION
-async function processData(data) {
+async function processData(cars) {
   try {
-    const formattedData = data.map(item => ({
+    // filter invalid data
+    const filteredCars = cars.filter(car => car.adID !== null);
+
+    const formattedData = filteredCars.map(item => ({
       adID: item.adID,
 
       contactMobile_1: item.contactMobile_1,
