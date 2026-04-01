@@ -3,7 +3,7 @@ import "dotenv/config"
 
 if (!process.env.MONGO_URI) {
   console.error("MONGO_URI not set in environment variables... Skipping");
-  process.exit(1);
+  process.exit(0);
 }
 
 await mongoose.connect(process.env.MONGO_URI, { serverApi: { version: '1', strict: true, deprecationErrors: true }, dbName: "qliving_api_mirror" })
