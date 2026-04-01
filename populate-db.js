@@ -112,6 +112,6 @@ mongoose.connection.close();
 // PROCESS DATA FUNCTION
 async function processData(cars) {
   let filteredCars = cars.filter((car) => car.adId !== null);
-  const result = await Car.insertMany(filteredCars, { rawResult: true }).catch((error) => console.error(error));
-  console.log(`${result.acknowledged ? '✅' : '❌'} Inserted ${result.insertedCount} cars`);
+  await Car.insertMany(filteredCars, { rawResult: true }).then((res) => console.log(`${res.acknowledged ? '✅' : '❌'} Inserted ${res.insertedCount} cars`)).catch((error) => console.error(error));
+
 }
