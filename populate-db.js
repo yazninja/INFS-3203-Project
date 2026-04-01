@@ -6,51 +6,100 @@ await mongoose.connect(process.env.MONGO_URI, { serverApi: { version: '1', stric
 
 console.log("Database Connected");
 // SCHEMA - EDIT THIS
+
+const imageSchema = new mongoose.Schema({
+  image: { type: Object }, // adjust if you know exact structure
+  viewpoint: { type: String, default: null }
+}, { _id: false });
+
 const carSchema = new mongoose.Schema({
-  adId: { type: Number, unique: false },
+  adId: { type: Number, unique: true, required: true },
 
-  contactMobile_1: String,
-  contactMobile_2: String,
-  contactWhatsapp_1: String,
-  contactWhatsapp_2: String,
+  contactMobiles: {
+  type: [String],
+  default: []
+},
 
-  cylinder: {
-    cylinderName: String,
+contactWhatsapps: {
+  type: [String],
+  default: []
+},
+
+  user: {
+    username: { type: String }
   },
 
-  engineSize: String,
+  cylinder: {
+    cylinderName: { type: String }
+  },
+
+  engineSize: { type: String },
 
   fuelType: {
-    fuelTypeName: String,
-  }
+    fuelTypeName: { type: String }
+  },
+
+  vehicleMake: {
+    makeName: { type: String }
+  },
+
+  vehicleModel: {
+    modelName: { type: String }
+  },
+
+  year: {
+    yearName: { type: String }
+  },
+
+  price: { type: String },
+  milage: { type: String },
+
+  images: [imageSchema],
+
+  status: { type: Number },
+
+  isBrandNew: { type: Boolean },
+  isPromoted: { type: Boolean },
+  installmentsAvailable: { type: Boolean },
+
+  urls: [
+    {
+      urlAlias: { type: String }
+    }
+  ],
+
+  location: {
+    locationName: { type: String }
+  },
+
+  isShowroom: { type: Boolean },
+  isShowroomRequired: { type: Boolean },
+  isBasic: { type: Boolean }
 
 }, { timestamps: true });
 
 const Car = mongoose.model("Car", carSchema);
 
 
-// ✅ REPLACED PART: FETCH FROM MONGODB INSTEAD OF API
 try {
-  console.log("Fetching cars from MongoDB Atlas...");
+  let page = 1;
+  let res = await fetch(`https://bo-prod.qatarliving.com/vehicles?cur_page=${page}&per_page=50`);
+  let data = await res.json();
 
-  const cars = await Car.find(); // get all cars
+  await processData(data.adsCar);
 
-  console.log("Total cars:", cars.length);
-
-  // Print sample
-  if (cars.length > 0) {
-    console.log("Sample car:");
-    console.log(cars[0]);
+  for (let i = 2; i <= data.meta.totalPages; i++) {
+    console.log(`Fetching page ${i}...`);
+    res = await fetch(`https://bo-prod.qatarliving.com/vehicles?cur_page=${i}&per_page=50`);
+    data = await res.json();
+    await processData(data.adsCar);
   }
-
-  console.log("Data fetched successfully ✅");
-
+  console.log("All data inserted ✅");
 } catch (error) {
   console.error(error);
 }
-
-// CLOSE CONNECTION
 mongoose.connection.close();
+
 
 
 // PROCESS DATA FUNCTION
