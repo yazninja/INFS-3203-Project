@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import "dotenv/config"
 
-await mongoose.connect(process.env.MONGO_URI, { serverApi: { version: '1', strict: true, deprecationErrors: true } })
+await mongoose.connect(process.env.MONGO_URI, { serverApi: { version: '1', strict: true, deprecationErrors: true }, dbName: "qliving_api_mirror" })
   .catch(err => { console.error(err); process.exit(1); });
-
+await mongoose.pluralize(null); // Use singular collection names
 console.log("Database Connected");
 // SCHEMA - EDIT THIS
 
@@ -75,14 +75,24 @@ const carSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-const Car = mongoose.model("Car", carSchema);
+const Car = mongoose.model("cars", carSchema);
+
+const MetaSchema = new mongoose.Schema({
+  totalPages: Number,
+  totalResults: Number,
+});
+const Metadata = mongoose.model("metadata", MetaSchema);
 
 
 try {
   let page = 1;
   let res = await fetch(`https://bo-prod.qatarliving.com/vehicles?cur_page=${page}&per_page=50`);
   let data = await res.json();
-
+  await Metadata.deleteMany({});
+  await Metadata.create({
+    totalPages: data.meta.totalPages,
+    totalResults: data.meta.totalResults
+  });
   await processData(data.adsCar);
 
   for (let i = 2; i <= data.meta.totalPages; i++) {
@@ -102,8 +112,6 @@ mongoose.connection.close();
 // PROCESS DATA FUNCTION
 async function processData(cars) {
   let filteredCars = cars.filter((car) => car.adId !== null);
-  console.log(cars[0]);
-  console.log("All:", cars.length, "Filtered:", filteredCars.length);
-
-  await Car.insertMany(filteredCars, { rawResult: true }).catch((error) => console.error(error));
+  const result = await Car.insertMany(filteredCars, { rawResult: true }).catch((error) => console.error(error));
+  console.log(`${result.acknowledged ? '✅' : '❌'} Inserted ${result.insertedCount} cars`);
 }
