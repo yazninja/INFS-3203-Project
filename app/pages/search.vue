@@ -35,16 +35,6 @@
             </div>
           </div>
 
-          <!-- Body Type -->
-          <div class="filter-group">
-            <div class="filter-label">Body Type</div>
-            <div class="chips">
-              <div v-for="type in bodyTypes" :key="type" class="chip"
-                :class="{ active: filters.bodyTypes.includes(type) }" @click="toggleChip(filters.bodyTypes, type)">{{
-                  type }}</div>
-            </div>
-          </div>
-
           <!-- Budget -->
           <div class="filter-group">
             <div class="filter-label">Budget (QAR)</div>
