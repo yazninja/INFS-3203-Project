@@ -55,15 +55,6 @@
             </div>
           </div>
 
-          <!-- Transmission -->
-          <div class="filter-group">
-            <div class="filter-label">Transmission</div>
-            <div class="chips">
-              <div v-for="t in transmissions" :key="t" class="chip" :class="{ active: filters.transmission === t }"
-                @click="filters.transmission = filters.transmission === t ? '' : t">{{ t }}</div>
-            </div>
-          </div>
-
           <!-- Condition -->
           <div class="filter-group">
             <div class="filter-label">Condition</div>
