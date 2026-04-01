@@ -24,7 +24,7 @@ jobs:
               with:
                     push: false
                     secret-envs: |
-                        MONGO_URI=${{ secrets.MONGO_URI }}
+                        MONGO_URI="${{ secrets.MONGO_URI }}"
                     tags: |
                         ${{ secrets.DOCKERHUB_USERNAME }}/qatardrive:latest
                         ${{ secrets.DOCKERHUB_USERNAME }}/qatardrive:${{ github.sha }}
