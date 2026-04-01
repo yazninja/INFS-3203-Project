@@ -15,15 +15,12 @@ const imageSchema = new mongoose.Schema({
 const carSchema = new mongoose.Schema({
   adId: { type: Number, unique: true, required: true },
 
-  contactMobiles: {
-  type: [String],
-  default: []
-},
-
-contactWhatsapps: {
-  type: [String],
-  default: []
-},
+  contactMobiles_1: String,
+  contactMobiles_2: String,
+  contactMobiles_3: String,
+  contactWhatsapp_1: String,
+  contactWhatsapp_2: String,
+  contactWhatsapp_3: String,
 
   user: {
     username: { type: String }
