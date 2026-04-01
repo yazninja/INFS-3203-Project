@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import "dotenv/config"
 
-if (!process.env.MONGO_URI) {
+if (process.env.SKIP_POPULATE || !process.env.MONGO_URI) {
   console.error("MONGO_URI not set in environment variables... Skipping");
   process.exit(0);
 }
