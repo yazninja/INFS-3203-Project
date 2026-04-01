@@ -18,9 +18,6 @@ jobs:
               with:
                     username: ${{ secrets.DOCKERHUB_USERNAME }}
                     password: ${{ secrets.DOCKERHUB_TOKEN }}
-            
-            - name: Create .env file
-              run: echo "MONGO_URI=${{ secrets.MONGO_URI }}" > .env
 
             - name: Build image
               uses: docker/build-push-action@v7
