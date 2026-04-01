@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
+import "dotenv/config"
 
 await mongoose.connect(process.env.MONGO_URI, { serverApi: { version: '1', strict: true, deprecationErrors: true } })
   .catch(err => { console.error(err); process.exit(1); });
 
 console.log("Database Connected");
-
 // SCHEMA - EDIT THIS
 const carSchema = new mongoose.Schema({
   adId: { type: Number, unique: false },
@@ -27,25 +27,30 @@ const carSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const Car = mongoose.model("Car", carSchema);
+
+
+// ✅ REPLACED PART: FETCH FROM MONGODB INSTEAD OF API
 try {
-  let page = 1;
-  let res = await fetch(`https://bo-prod.qatarliving.com/vehicles?cur_page=${page}&per_page=50`);
-  let data = await res.json();
+  console.log("Fetching cars from MongoDB Atlas...");
 
-  await processData(data.adsCar);
+  const cars = await Car.find(); // get all cars
 
-  for (let i = 2; i <= data.meta.totalPages; i++) {
-    console.log(`Fetching page ${i}...`);
-    res = await fetch(`https://bo-prod.qatarliving.com/vehicles?cur_page=${i}&per_page=50`);
-    data = await res.json();
-    await processData(data.adsCar);
+  console.log("Total cars:", cars.length);
+
+  // Print sample
+  if (cars.length > 0) {
+    console.log("Sample car:");
+    console.log(cars[0]);
   }
-  console.log("All data inserted ✅");
+
+  console.log("Data fetched successfully ✅");
+
 } catch (error) {
   console.error(error);
 }
-mongoose.connection.close();
 
+// CLOSE CONNECTION
+mongoose.connection.close();
 
 
 // PROCESS DATA FUNCTION
