@@ -233,23 +233,29 @@ useSeoMeta({
   title: 'Browse Cars — QatarDrive',
   description: 'Browse all secondhand car listings in Qatar, ranked by AI.',
 })
+// ── Data from backend ───────────────────────────────────────
+const { data: cars } = await useFetch('/api/v1/getAllCars');
+console.log('Fetched', cars.value?.length ?? 0, 'cars from backend')
 
 // ── Filter options ───────────────────────────────────────
-const makes = ['Toyota', 'BMW', 'Mercedes', 'Nissan', 'Honda', 'Lexus', 'Hyundai', 'Kia']
-const bodyTypes = ['Sedan', 'SUV', 'Coupe', 'Pickup', 'Hatchback', 'Van']
-const transmissions = ['Automatic', 'Manual']
-const conditions = ['Any', 'Excellent', 'Good', 'Used']
+const models = cars.value ? Array.from(new Set(cars.value.map(c => c.model))).sort() : []
+const makes = cars.value ? Array.from(new Set(cars.value.map(c => c.make))).sort() : []
+const years = cars.value ? Array.from(new Set(cars.value.map(c => c.year))).sort((a, b) => b - a) : []
+const engine = cars.value ? Array.from(new Set(cars.value.map(c => c.engine))).sort() : []
+const locations = cars.value ? Array.from(new Set(cars.value.map(c => c.location))).sort() : []
 
 // ── Reactive filter state ────────────────────────────────
 const filters = reactive({
-  makes: [],
-  bodyTypes: [],
-  minPrice: '',
-  maxPrice: '',
-  minYear: '',
-  maxYear: '',
-  transmission: '',
-  condition: '',
+  models: [''],
+  makes: [''],
+  engine: [''],
+  locations: [''],
+  minPrice: 0,
+  maxPrice: 10000000,
+  minYear: 1900,
+  maxYear: new Date().getFullYear(),
+  minMileage: 0,
+  maxMileage: 500000,
 })
 
 const sortBy = ref('ai')
@@ -261,52 +267,36 @@ function toggleChip(arr, val) {
 }
 
 function resetFilters() {
-  filters.makes = []
-  filters.bodyTypes = []
-  filters.minPrice = ''
-  filters.maxPrice = ''
-  filters.minYear = ''
-  filters.maxYear = ''
-  filters.transmission = ''
-  filters.condition = ''
+  filters.models = ['']
+  filters.makes = ['']
+  filters.engine = ['']
+  filters.locations = ['']
 }
 
 // ── Active filter tags (for pills row) ──────────────────
 const activeFilterTags = computed(() => {
   const tags = []
   filters.makes.forEach(m => tags.push({ label: m, remove: () => toggleChip(filters.makes, m) }))
-  filters.bodyTypes.forEach(b => tags.push({ label: b, remove: () => toggleChip(filters.bodyTypes, b) }))
-  if (filters.transmission) tags.push({ label: filters.transmission, remove: () => { filters.transmission = '' } })
-  if (filters.condition) tags.push({ label: filters.condition, remove: () => { filters.condition = '' } })
-  if (filters.minPrice) tags.push({ label: `Min QAR ${filters.minPrice}`, remove: () => { filters.minPrice = '' } })
-  if (filters.maxPrice) tags.push({ label: `Max QAR ${filters.maxPrice}`, remove: () => { filters.maxPrice = '' } })
+  if (filters.minPrice) tags.push({ label: `Min QAR ${filters.minPrice}`, remove: () => { filters.minPrice = 0 } })
+  if (filters.maxPrice) tags.push({ label: `Max QAR ${filters.maxPrice}`, remove: () => { filters.maxPrice = 10000000 } })
+  if (filters.minYear) tags.push({ label: `From ${filters.minYear}`, remove: () => { filters.minYear = 1900 } })
+  if (filters.maxYear) tags.push({ label: `To ${filters.maxYear}`, remove: () => { filters.maxYear = new Date().getFullYear() } })
+  if (filters.minMileage) tags.push({ label: `Min ${filters.minMileage} km`, remove: () => { filters.minMileage = 0 } })
+  if (filters.maxMileage) tags.push({ label: `Max ${filters.maxMileage} km`, remove: () => { filters.maxMileage = 500000 } })
   return tags
 })
 
 // ── Mock car data (replace with API call) ───────────────
 // TODO: replace with useFetch('/api/cars') when backend is ready
-const cars = ref([
-  { id: 1, make: 'Toyota', model: 'Fortuner', year: 2021, bodyType: 'SUV', transmission: 'Automatic', mileage: 42000, price: 98000, engine: '4.0L V6', color: 'Silver', aiScore: 96, badge: { label: 'Best Value', type: 'gold' }, priceTag: { label: '7% below market', type: 'good' } },
-  { id: 2, make: 'Lexus', model: 'RX 350', year: 2022, bodyType: 'SUV', transmission: 'Automatic', mileage: 28000, price: 145000, engine: '3.5L V6', color: 'White', aiScore: 91, badge: { label: 'Hot Deal', type: 'red' }, priceTag: { label: 'Fair price', type: 'ok' } },
-  { id: 3, make: 'BMW', model: 'X5', year: 2020, bodyType: 'SUV', transmission: 'Automatic', mileage: 55000, price: 132000, engine: '3.0L I6', color: 'Black', aiScore: 87, badge: null, priceTag: { label: '3% above market', type: 'warn' } },
-  { id: 4, make: 'Toyota', model: 'Land Cruiser', year: 2019, bodyType: 'SUV', transmission: 'Automatic', mileage: 70000, price: 165000, engine: '4.5L V8', color: 'Pearl', aiScore: 84, badge: { label: 'AI Pick', type: 'gold' }, priceTag: { label: 'Fair price', type: 'ok' } },
-  { id: 5, make: 'Nissan', model: 'Patrol', year: 2021, bodyType: 'SUV', transmission: 'Automatic', mileage: 38000, price: 118000, engine: '5.6L V8', color: 'White', aiScore: 89, badge: null, priceTag: { label: '5% below market', type: 'good' } },
-  { id: 6, make: 'Honda', model: 'Civic', year: 2022, bodyType: 'Sedan', transmission: 'Automatic', mileage: 22000, price: 62000, engine: '1.5L T4', color: 'Blue', aiScore: 82, badge: { label: 'Low Km', type: 'blue' }, priceTag: { label: 'Fair price', type: 'ok' } },
-  { id: 7, make: 'Mercedes', model: 'GLC 300', year: 2021, bodyType: 'SUV', transmission: 'Automatic', mileage: 35000, price: 185000, engine: '2.0L T4', color: 'Grey', aiScore: 78, badge: null, priceTag: { label: '10% above market', type: 'warn' } },
-  { id: 8, make: 'Hyundai', model: 'Tucson', year: 2023, bodyType: 'SUV', transmission: 'Automatic', mileage: 15000, price: 78000, engine: '2.0L 4', color: 'Red', aiScore: 85, badge: { label: 'New Listing', type: 'blue' }, priceTag: { label: '4% below market', type: 'good' } },
-])
+
 
 // ── Filtering logic ──────────────────────────────────────
 const filteredCars = computed(() => {
-  return cars.value.filter(car => {
-    if (filters.makes.length && !filters.makes.includes(car.make)) return false
-    if (filters.bodyTypes.length && !filters.bodyTypes.includes(car.bodyType)) return false
-    if (filters.transmission && car.transmission !== filters.transmission) return false
-    if (filters.condition && filters.condition !== 'Any') return true
-    if (filters.minPrice && car.price < Number(filters.minPrice)) return false
-    if (filters.maxPrice && car.price > Number(filters.maxPrice)) return false
-    if (filters.minYear && car.year < Number(filters.minYear)) return false
-    if (filters.maxYear && car.year > Number(filters.maxYear)) return false
+  return cars.value!.filter(car => {
+    // if (filters.makes.length && !filters.makes.includes(car.make)) return false
+    // if (filters.models.length && !filters.models.includes(car.model)) return false
+    // if (filters.engine.length && !filters.engine.includes(car.engine)) return false
+    // if (filters.locations.length && !filters.locations.includes(car.location)) return false
     return true
   })
 })
@@ -314,11 +304,12 @@ const filteredCars = computed(() => {
 // ── Sorting logic ────────────────────────────────────────
 const sortedCars = computed(() => {
   const list = [...filteredCars.value]
-  if (sortBy.value === 'price_asc') return list.sort((a, b) => a.price - b.price)
-  if (sortBy.value === 'price_desc') return list.sort((a, b) => b.price - a.price)
-  if (sortBy.value === 'year') return list.sort((a, b) => b.year - a.year)
-  if (sortBy.value === 'mileage') return list.sort((a, b) => a.mileage - b.mileage)
-  return list.sort((a, b) => b.aiScore - a.aiScore) // default: AI score
+  // if (sortBy.value === 'price_asc') return list.sort((a, b) => a.price - b.price)
+  // if (sortBy.value === 'price_desc') return list.sort((a, b) => b.price - a.price)
+  // if (sortBy.value === 'year') return list.sort((a, b) => b.year - a.year)
+  // if (sortBy.value === 'mileage') return list.sort((a, b) => a.mileage - b.mileage)
+  // return list.sort((a, b) => b.aiScore - a.aiScore) // default: AI score
+  return list;
 })
 </script>
 
