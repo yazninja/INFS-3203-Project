@@ -23,7 +23,7 @@ jobs:
               uses: docker/build-push-action@v7
               with:
                     push: false
-                    secret-envs: |
+                    secrets: |
                         "MONGO_URI=${{ secrets.MONGO_URI }}"
                     tags: |
                         ${{ secrets.DOCKERHUB_USERNAME }}/qatardrive:latest
@@ -46,7 +46,7 @@ jobs:
               if: github.event_name == 'push'
               with:
                     push: true
-                    secret-envs: |
+                    secrets: |
                         "MONGO_URI=${{ secrets.MONGO_URI }}"
                     tags: |
                         ${{ secrets.DOCKERHUB_USERNAME }}/qatardrive:latest
