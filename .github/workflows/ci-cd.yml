@@ -28,7 +28,7 @@ jobs:
                     push: false
                     context: .
                     secret-files: |
-                        DOTENV=.env
+                        DOTENV=./.env
                     tags: |
                         ${{ secrets.DOCKERHUB_USERNAME }}/qatardrive:latest
                         ${{ secrets.DOCKERHUB_USERNAME }}/qatardrive:${{ github.sha }}
@@ -52,7 +52,7 @@ jobs:
                     push: true
                     context: .
                     secret-files: |
-                        DOTENV=.env
+                        DOTENV=./.env
                     tags: |
                         ${{ secrets.DOCKERHUB_USERNAME }}/qatardrive:latest
                         ${{ secrets.DOCKERHUB_USERNAME }}/qatardrive:${{ github.sha }}
