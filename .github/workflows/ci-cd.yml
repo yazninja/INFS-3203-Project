@@ -18,13 +18,17 @@ jobs:
               with:
                     username: ${{ secrets.DOCKERHUB_USERNAME }}
                     password: ${{ secrets.DOCKERHUB_TOKEN }}
+            
+            - name: Create .env file
+              run: echo "MONGO_URI=${{ secrets.MONGO_URI }}" > .env
 
             - name: Build image
               uses: docker/build-push-action@v7
               with:
                     push: false
-                    secrets: |
-                        "MONGO_URI=${{ secrets.MONGO_URI }}"
+                    context: .
+                    secret-files: |
+                        DOTENV=.env
                     tags: |
                         ${{ secrets.DOCKERHUB_USERNAME }}/qatardrive:latest
                         ${{ secrets.DOCKERHUB_USERNAME }}/qatardrive:${{ github.sha }}
@@ -46,8 +50,9 @@ jobs:
               if: github.event_name == 'push'
               with:
                     push: true
-                    secrets: |
-                        "MONGO_URI=${{ secrets.MONGO_URI }}"
+                    context: .
+                    secret-files: |
+                        DOTENV=.env
                     tags: |
                         ${{ secrets.DOCKERHUB_USERNAME }}/qatardrive:latest
                         ${{ secrets.DOCKERHUB_USERNAME }}/qatardrive:${{ github.sha }}
