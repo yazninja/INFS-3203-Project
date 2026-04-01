@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 import "dotenv/config"
 
+if (!process.env.MONGO_URI) {
+  console.error("MONGO_URI not set in environment variables... Skipping");
+  process.exit(0);
+}
+
 await mongoose.connect(process.env.MONGO_URI, { serverApi: { version: '1', strict: true, deprecationErrors: true }, dbName: "qliving_api_mirror" })
   .catch(err => { console.error(err); process.exit(1); });
 await mongoose.pluralize(null); // Use singular collection names
