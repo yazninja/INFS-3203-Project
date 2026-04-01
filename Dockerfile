@@ -10,7 +10,8 @@ RUN pnpm install --frozen-lockfile
 RUN --mount=type=secret,id=DOTENV,target=/build/.env \
 	node populate-db.js 
 # Build the application
-RUN pnpm build --preset node-server
+RUN --mount=type=secret,id=DOTENV,target=/build/.env \
+	pnpm build --preset node-server
 
 FROM base AS production
 WORKDIR /app
