@@ -2,13 +2,16 @@ FROM node:current-alpine AS base
 # Build stage
 FROM base AS build
 WORKDIR /build 
+
 COPY . .
 RUN npm -g i pnpm
 RUN pnpm install --frozen-lockfile
 # Populate the database with initial data
-RUN node populate-db.js 
+RUN --mount=type=secret,id=DOTENV,target=/build/.env \
+	node populate-db.js 
 # Build the application
-RUN pnpm build --preset node-server
+RUN --mount=type=secret,id=DOTENV,target=/build/.env \
+	pnpm build --preset node-server
 
 FROM base AS production
 WORKDIR /app

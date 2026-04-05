@@ -6,7 +6,14 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/ui',
     '@nuxtjs/seo',
-    '@nuxt/image'
+    '@nuxt/image',
+    'nuxt-mongoose'
   ],
-  css: ['~/assets/css/main.css']
+  css: ['~/assets/css/main.css'],
+  mongoose: {
+    uri: process.env.MONGO_URI,
+    options: {
+      dbName: 'qliving_api_mirror'
+    }
+  }
 })
