@@ -32,7 +32,9 @@ type Car = {
 	price: string
 	milage: string
 	images: {
-		imageUrl: string
+		image: {
+			uri: string
+		}
 	}[]
 	status: number
 	isBrandNew: boolean
@@ -82,7 +84,9 @@ export const CarSchema = defineMongooseModel<Car>({
 		milage: { type: String, required: true },
 		images: [
 			{
-				imageUrl: { type: String, required: true }
+				image: {
+					uri: { type: String, required: true }
+				}
 			}
 		],
 		status: { type: Number, required: true },

@@ -15,5 +15,8 @@ export default defineNuxtConfig({
     options: {
       dbName: 'qliving_api_mirror'
     }
+  },
+  routeRules: {
+    '/': { prerender: true },
   }
 })
