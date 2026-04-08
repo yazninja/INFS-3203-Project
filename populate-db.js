@@ -102,7 +102,7 @@ try {
   });
   await processData(data.adsCar);
 
-  for (let i = 2; i <= data.meta.totalPages; i++) {
+  for (let i = 2; i <= 5; i++) { // data.meta.totalPages to fetch all pages
     console.log(`Fetching page ${i}...`);
     res = await fetch(`https://bo-prod.qatarliving.com/vehicles?cur_page=${i}&per_page=50`);
     data = await res.json();

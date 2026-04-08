@@ -1,5 +1,10 @@
 <template>
-  <div class="car-card" @click="navigateTo(`/cars/${car.id}`)">
+  <div class="car-card" @click="navigateTo(`/cars/${car.id}`, {
+    external: true,
+    open: {
+      target: '_blank',
+    }
+  })">
     <!-- Image area -->
     <div class="car-img-area">
       <div v-if="car.images && car.images.length" class="car-img-placeholder">
