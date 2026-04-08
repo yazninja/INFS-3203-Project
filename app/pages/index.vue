@@ -18,7 +18,7 @@
           <h1 class="hero-title fade-up delay-1">
             FIND YOUR<br>
             <em>PERFECT</em><br>
-            CAR IN QATAR
+            VEHICLE IN QATAR
           </h1>
 
           <p class="hero-subtitle fade-up delay-2">
