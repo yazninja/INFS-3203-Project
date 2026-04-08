@@ -15,7 +15,7 @@
 
       <!-- CTA -->
       <div class="nav-actions">
-        <NuxtLink to="/assistant" class="btn-primary">
+        <NuxtLink to="/assistant" class="btn-primary" :disabled="isAIDisabled">
           <span class="ai-dot"></span>
           Ask AI
         </NuxtLink>
@@ -24,6 +24,15 @@
     </div>
   </nav>
 </template>
+<script setup lang="ts">
+const isAIDisabled = ref(true);
+
+onMounted(() => {
+  if (localStorage.getItem('aiReady') === 'true') {
+    isAIDisabled.value = false;
+  }
+});
+</script>
 
 <style scoped>
 .navbar {
@@ -53,8 +62,14 @@
   color: var(--text);
   transition: opacity 0.2s;
 }
-.logo:hover { opacity: 0.8; }
-.logo span  { color: var(--accent); }
+
+.logo:hover {
+  opacity: 0.8;
+}
+
+.logo span {
+  color: var(--accent);
+}
 
 .nav-links {
   display: flex;
@@ -69,8 +84,15 @@
   transition: color 0.2s;
   position: relative;
 }
-.nav-link:hover        { color: var(--text); }
-.nav-link.router-link-active { color: var(--accent); }
+
+.nav-link:hover {
+  color: var(--text);
+}
+
+.nav-link.router-link-active {
+  color: var(--accent);
+}
+
 .nav-link.router-link-active::after {
   content: '';
   position: absolute;
@@ -81,7 +103,11 @@
   background: var(--accent);
 }
 
-.nav-actions { display: flex; align-items: center; gap: 12px; }
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
 .ai-dot {
   display: inline-block;
@@ -93,6 +119,8 @@
 }
 
 @media (max-width: 640px) {
-  .nav-links { display: none; }
+  .nav-links {
+    display: none;
+  }
 }
 </style>

@@ -176,6 +176,8 @@ useSeoMeta({
   description: 'Find the best secondhand car deals in Qatar. AI-powered search and ranking from QatarLiving listings.',
 })
 
+
+
 const stats = [
   { num: '4,200+', label: 'Active Listings' },
   { num: 'AI', label: 'Powered Matching' },

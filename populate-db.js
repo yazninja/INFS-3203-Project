@@ -87,7 +87,9 @@ const MetaSchema = new mongoose.Schema({
   totalResults: Number,
 });
 const Metadata = mongoose.model("metadata", MetaSchema);
-
+// delete old data
+await Car.deleteMany({});
+await Metadata.deleteMany({});
 
 try {
   let page = 1;

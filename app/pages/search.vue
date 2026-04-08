@@ -116,78 +116,18 @@
           </div>
 
           <!-- Car grid -->
-          <div class="cars-grid">
-            <div v-for="car in sortedCars" :key="car.id" class="car-card" @click="$router.push(`/cars/${car.id}`)">
-              <!-- Image area -->
-              <div class="car-img-area">
-                <div class="car-img-placeholder">
-                  <svg class="car-sil" viewBox="0 0 300 120" fill="none">
-                    <path
-                      d="M20 82 L20 66 Q28 46 52 36 L108 24 Q132 20 155 26 L212 34 Q238 40 256 60 L278 70 L278 82 Q278 94 268 94 L32 94 Q20 94 20 82Z"
-                      fill="rgba(200,169,110,0.08)" stroke="rgba(200,169,110,0.25)" stroke-width="1" />
-                    <path d="M62 60 Q72 40 96 32 L148 26 L148 60Z" fill="rgba(150,200,240,0.05)"
-                      stroke="rgba(150,200,240,0.15)" stroke-width="0.8" />
-                    <path d="M158 26 L200 30 L220 44 L224 60 L158 60Z" fill="rgba(150,200,240,0.05)"
-                      stroke="rgba(150,200,240,0.15)" stroke-width="0.8" />
-                    <circle cx="84" cy="94" r="20" fill="#0e0e10" stroke="rgba(200,169,110,0.35)" stroke-width="1" />
-                    <circle cx="84" cy="94" r="11" fill="rgba(200,169,110,0.05)" stroke="rgba(200,169,110,0.4)"
-                      stroke-width="0.8" />
-                    <circle cx="216" cy="94" r="20" fill="#0e0e10" stroke="rgba(200,169,110,0.35)" stroke-width="1" />
-                    <circle cx="216" cy="94" r="11" fill="rgba(200,169,110,0.05)" stroke="rgba(200,169,110,0.4)"
-                      stroke-width="0.8" />
-                  </svg>
-                </div>
-                <!-- Badges -->
-                <div v-if="car.badge" class="car-badge" :class="`badge-${car.badge.type}`">
-                  {{ car.badge.label }}
-                </div>
-                <!-- AI score -->
-                <div class="ai-score">
-                  <span class="ai-score-num">{{ car.aiScore }}%</span>
-                  <span class="ai-score-label">AI Match</span>
-                </div>
-              </div>
+          <UProgress class="mb-4 sticky" v-if="isStreaming" v-model="progressValue" :max="['Loading More Cars']" />
+          <UScrollArea v-slot="{ item, index }" :items="sortedCars" orientation="vertical" :virtualize="{
+            gap: 16,
+            lanes: 2,
+            estimateSize: 916,
+          }" class="mt-4">
+            <LazyCarCard :car="item" :key="index" hydrate-on-visible />
+          </UScrollArea>
 
-              <!-- Card body -->
-              <div class="car-body">
-                <div class="car-name">{{ car.make }} {{ car.model }} {{ car.year }}</div>
-                <div class="car-meta">{{ car.bodyType }} · {{ car.transmission }} · {{ car.mileage.toLocaleString() }}
-                  km</div>
-
-                <div class="car-specs">
-                  <div class="spec">
-                    <strong>{{ car.year }}</strong>
-                    <span>Year</span>
-                  </div>
-                  <div class="spec">
-                    <strong>{{ car.engine }}</strong>
-                    <span>Engine</span>
-                  </div>
-                  <div class="spec">
-                    <strong>{{ car.color }}</strong>
-                    <span>Color</span>
-                  </div>
-                </div>
-
-                <div class="car-footer">
-                  <div class="car-price-wrap">
-                    <div class="car-price">QAR {{ car.price.toLocaleString() }}</div>
-                    <div v-if="car.priceTag" class="price-tag" :class="car.priceTag.type">
-                      {{ car.priceTag.label }}
-                    </div>
-                  </div>
-                  <button class="view-btn" @click.stop="$router.push(`/cars/${car.id}`)">
-                    View
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                      stroke-linecap="round">
-                      <path d="M5 12h14M12 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
+          <!-- <div class="cars-grid mt-4!">
+            <LazyCarCard v-for="car in sortedCars" :key="car.id" :car="car" hydrate-on-visible />
+          </div> -->
           <!-- Empty state -->
           <div v-if="sortedCars.length === 0" class="empty-state">
             <div class="empty-icon">
@@ -210,27 +150,26 @@
 </template>
 
 <script setup lang="ts">
+import { ref, reactive, computed, onMounted } from 'vue'
+import type { Car } from '../../types/index'
+
 useSeoMeta({
   title: 'Browse Cars — QatarDrive',
   description: 'Browse all secondhand car listings in Qatar, ranked by AI.',
 })
-// ── Data from backend ───────────────────────────────────────
-const { data: cars } = await useFetch('/api/v1/getAllCars');
-console.log('Fetched', cars.value?.length ?? 0, 'cars from backend')
 
-// ── Filter options ───────────────────────────────────────
-const models = cars.value ? Array.from(new Set(cars.value.map(c => c.model))).sort() : []
-const makes = cars.value ? Array.from(new Set(cars.value.map(c => c.make))).sort() : []
-const years = cars.value ? Array.from(new Set(cars.value.map(c => c.year))).sort((a, b) => b - a) : []
-const engine = cars.value ? Array.from(new Set(cars.value.map(c => c.engine))).sort() : []
-const locations = cars.value ? Array.from(new Set(cars.value.map(c => c.location))).sort() : []
+// ── State ─────────────────────────────────────────────────
+const cars = ref<Car[]>([])
+const isStreaming = ref(false)
+const error = ref<string | null>(null)
+const sortBy = ref('ai')
+const progressValue = ref(null);
 
-// ── Reactive filter state ────────────────────────────────
 const filters = reactive({
-  models: [''],
-  makes: [''],
-  engine: [''],
-  locations: [''],
+  models: [] as string[],
+  makes: [] as string[],
+  engine: [] as string[],
+  locations: [] as string[],
   minPrice: 0,
   maxPrice: 10000000,
   minYear: 1900,
@@ -239,59 +178,112 @@ const filters = reactive({
   maxMileage: 500000,
 })
 
-const sortBy = ref('ai')
 
-function toggleChip(arr, val) {
+
+// ── Streaming Data Fetcher ────────────────────────────────
+async function fetchData() {
+  isStreaming.value = true
+  try {
+    const response = await fetch('/api/v1/getAllCars')
+    if (!response.body) throw new Error('ReadableStream not supported')
+
+    const reader = response.body.getReader()
+    const decoder = new TextDecoder()
+    let buffer = ''
+
+    while (true) {
+      const { value, done } = await reader.read()
+      if (done) break
+
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+
+      // Keep the last partial line in the buffer
+      buffer = lines.pop() || ''
+
+      for (const line of lines) {
+        if (line.trim()) {
+          try {
+            const car: Car = JSON.parse(line)
+            cars.value.push(car)
+          } catch (e) {
+            console.error('Error parsing NDJSON line', e)
+          }
+        }
+      }
+    }
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Failed to load cars'
+  } finally {
+    isStreaming.value = false
+    localStorage.setItem('jsonDB', JSON.stringify(cars.value)) // Store full data for AI use
+    localStorage.setItem('aiReady', 'true') // Flag to indicate AI can start processing;
+  }
+}
+
+// Start fetching on mount (Client-side only)
+onMounted(() => {
+  fetchData()
+})
+
+// ── Computed Filter Options (Update automatically as cars stream in) ──
+const models = computed(() => [...new Set(cars.value.map(c => c.model))].sort())
+const makes = computed(() => [...new Set(cars.value.map(c => c.make))].sort())
+const years = computed(() => [...new Set(cars.value.map(c => c.year))].sort((a, b) => b - a))
+const engines = computed(() => [...new Set(cars.value.map(c => c.engine))].sort())
+const locations = computed(() => [...new Set(cars.value.map(c => c.location))].sort())
+
+// ── Filter & Sort Logic ───────────────────────────────────
+const filteredCars = computed(() => {
+  return cars.value.filter(car => {
+    if (filters.makes.length && !filters.makes.includes(car.make)) return false
+    if (filters.models.length && !filters.models.includes(car.model)) return false
+    if (car.price < filters.minPrice || car.price > filters.maxPrice) return false
+    if (car.year < filters.minYear || car.year > filters.maxYear) return false
+    if (car.mileage > filters.maxMileage) return false
+    return true
+  })
+})
+
+const sortedCars = computed(() => {
+  const list = [...filteredCars.value]
+  if (sortBy.value === 'price_asc') return list.sort((a, b) => a.price - b.price)
+  if (sortBy.value === 'price_desc') return list.sort((a, b) => b.price - a.price)
+  if (sortBy.value === 'year') return list.sort((a, b) => b.year - a.year)
+  if (sortBy.value === 'mileage') return list.sort((a, b) => a.mileage - b.mileage)
+  return list.sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0))
+})
+
+// ── UI Helpers ───────────────────────────────────────────
+const activeFilterTags = computed(() => {
+  const tags: { label: string; remove: () => void }[] = []
+
+  filters.makes.forEach(m => {
+    tags.push({ label: m, remove: () => toggleChip(filters.makes, m) })
+  })
+
+  if (filters.minPrice > 0) {
+    tags.push({ label: `Min QAR ${filters.minPrice}`, remove: () => { filters.minPrice = 0 } })
+  }
+
+  // Add more tag logic here...
+  return tags
+})
+
+function toggleChip(arr: string[], val: string) {
   const i = arr.indexOf(val)
   if (i === -1) arr.push(val)
   else arr.splice(i, 1)
 }
 
 function resetFilters() {
-  filters.models = ['']
-  filters.makes = ['']
-  filters.engine = ['']
-  filters.locations = ['']
+  filters.models = []
+  filters.makes = []
+  filters.engine = []
+  filters.locations = []
+  filters.minPrice = 0
+  // ... reset others
 }
-
-// ── Active filter tags (for pills row) ──────────────────
-const activeFilterTags = computed(() => {
-  const tags = []
-  filters.makes.forEach(m => tags.push({ label: m, remove: () => toggleChip(filters.makes, m) }))
-  if (filters.minPrice) tags.push({ label: `Min QAR ${filters.minPrice}`, remove: () => { filters.minPrice = 0 } })
-  if (filters.maxPrice) tags.push({ label: `Max QAR ${filters.maxPrice}`, remove: () => { filters.maxPrice = 10000000 } })
-  if (filters.minYear) tags.push({ label: `From ${filters.minYear}`, remove: () => { filters.minYear = 1900 } })
-  if (filters.maxYear) tags.push({ label: `To ${filters.maxYear}`, remove: () => { filters.maxYear = new Date().getFullYear() } })
-  if (filters.minMileage) tags.push({ label: `Min ${filters.minMileage} km`, remove: () => { filters.minMileage = 0 } })
-  if (filters.maxMileage) tags.push({ label: `Max ${filters.maxMileage} km`, remove: () => { filters.maxMileage = 500000 } })
-  return tags
-})
-
-// ── Mock car data (replace with API call) ───────────────
-// TODO: replace with useFetch('/api/cars') when backend is ready
-
-
-// ── Filtering logic ──────────────────────────────────────
-const filteredCars = computed(() => {
-  return cars.value!.filter(car => {
-    // if (filters.makes.length && !filters.makes.includes(car.make)) return false
-    // if (filters.models.length && !filters.models.includes(car.model)) return false
-    // if (filters.engine.length && !filters.engine.includes(car.engine)) return false
-    // if (filters.locations.length && !filters.locations.includes(car.location)) return false
-    return true
-  })
-})
-
-// ── Sorting logic ────────────────────────────────────────
-const sortedCars = computed(() => {
-  const list = [...filteredCars.value]
-  // if (sortBy.value === 'price_asc') return list.sort((a, b) => a.price - b.price)
-  // if (sortBy.value === 'price_desc') return list.sort((a, b) => b.price - a.price)
-  // if (sortBy.value === 'year') return list.sort((a, b) => b.year - a.year)
-  // if (sortBy.value === 'mileage') return list.sort((a, b) => a.mileage - b.mileage)
-  // return list.sort((a, b) => b.aiScore - a.aiScore) // default: AI score
-  return list;
-})
 </script>
 
 <style scoped>
@@ -573,201 +565,7 @@ const sortedCars = computed(() => {
   gap: 16px;
 }
 
-.car-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  cursor: pointer;
-  transition: border-color 0.2s, transform 0.2s;
-}
 
-.car-card:hover {
-  border-color: rgba(200, 169, 110, 0.3);
-  transform: translateY(-2px);
-}
-
-.car-img-area {
-  position: relative;
-  height: 160px;
-  background: var(--bg3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.car-sil {
-  width: 85%;
-  opacity: 0.9;
-}
-
-.car-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  font-size: 10px;
-  font-weight: 500;
-  padding: 4px 10px;
-  border-radius: 3px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.badge-gold {
-  background: rgba(200, 169, 110, 0.15);
-  color: var(--accent);
-  border: 1px solid rgba(200, 169, 110, 0.3);
-}
-
-.badge-red {
-  background: rgba(224, 90, 58, 0.12);
-  color: #e05a3a;
-  border: 1px solid rgba(224, 90, 58, 0.3);
-}
-
-.badge-blue {
-  background: rgba(100, 160, 220, 0.12);
-  color: #7ab4e0;
-  border: 1px solid rgba(100, 160, 220, 0.3);
-}
-
-.ai-score {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(10, 10, 11, 0.85);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius-sm);
-  padding: 4px 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
-  backdrop-filter: blur(4px);
-}
-
-.ai-score-num {
-  font-family: var(--font-display);
-  font-size: 16px;
-  color: var(--accent);
-  line-height: 1;
-}
-
-.ai-score-label {
-  font-size: 9px;
-  color: var(--muted);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.car-body {
-  padding: 16px;
-}
-
-.car-name {
-  font-size: 15px;
-  font-weight: 500;
-  margin-bottom: 4px;
-}
-
-.car-meta {
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 14px;
-}
-
-.car-specs {
-  display: flex;
-  gap: 0;
-  margin-bottom: 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-}
-
-.spec {
-  flex: 1;
-  padding: 8px 10px;
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.spec:last-child {
-  border-right: none;
-}
-
-.spec strong {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text);
-}
-
-.spec span {
-  font-size: 10px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.car-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.car-price-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.car-price {
-  font-family: var(--font-display);
-  font-size: 22px;
-  color: var(--accent);
-  line-height: 1;
-}
-
-.price-tag {
-  font-size: 10px;
-  letter-spacing: 0.05em;
-}
-
-.price-tag.good {
-  color: var(--green);
-}
-
-.price-tag.ok {
-  color: var(--muted);
-}
-
-.price-tag.warn {
-  color: #e09a3a;
-}
-
-.view-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border2);
-  padding: 8px 16px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.15s;
-  white-space: nowrap;
-}
-
-.view-btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
 
 /* ── Empty state ─────────────────────────────────────────── */
 .empty-state {
