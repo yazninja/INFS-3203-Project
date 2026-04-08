@@ -1,4 +1,5 @@
 <template>
+  <div>
   <AppNavbar />
   <div class="landing">
 
